@@ -40,10 +40,17 @@ pip install -r requirements.txt
 python app.py
 ```
 
+For development with debug mode enabled:
+```bash
+FLASK_DEBUG=true python app.py
+```
+
 4. Open your web browser and navigate to:
 ```
 http://localhost:5000
 ```
+
+**Security Note**: The application runs in production mode by default. Only enable debug mode during development. For production deployments, use a production WSGI server like Gunicorn or uWSGI instead of the built-in Flask development server.
 
 ## Usage
 

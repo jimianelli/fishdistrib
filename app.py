@@ -6,10 +6,14 @@ Main Flask application for retrieving fisheries data by geographic location
 from flask import Flask, render_template, request, jsonify
 import sqlite3
 import json
+import math
 from datetime import datetime
 
 app = Flask(__name__)
 DATABASE = 'fisheries.db'
+
+# Constants
+KM_PER_DEGREE = 111.0  # Approximate kilometers per degree of latitude
 
 def get_db():
     """Get database connection"""
@@ -118,9 +122,9 @@ def search_catches():
     
     # Geographic filter (simplified - using bounding box approximation)
     if lat is not None and lon is not None:
-        # Approximate 1 degree = 111 km
-        lat_offset = radius / 111.0
-        lon_offset = radius / (111.0 * abs(cos(lat * 3.14159 / 180.0))) if lat != 0 else radius / 111.0
+        # Approximate conversion from degrees to kilometers
+        lat_offset = radius / KM_PER_DEGREE
+        lon_offset = radius / (KM_PER_DEGREE * abs(math.cos(math.radians(lat)))) if lat != 0 else radius / KM_PER_DEGREE
         query += ' AND c.latitude BETWEEN ? AND ? AND c.longitude BETWEEN ? AND ?'
         params.extend([lat - lat_offset, lat + lat_offset, lon - lon_offset, lon + lon_offset])
     
@@ -162,11 +166,6 @@ def search_catches():
     
     conn.close()
     return jsonify(results)
-
-def cos(x):
-    """Simple cosine implementation"""
-    import math
-    return math.cos(x)
 
 @app.route('/api/species', methods=['GET'])
 def get_species():
@@ -224,4 +223,8 @@ def get_stats():
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Debug mode should only be used in development
+    # Set debug=False for production deployment
+    import os
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
