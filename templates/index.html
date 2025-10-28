@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fisheries Catch Distribution</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🐟 Fisheries Catch Distribution</h1>
+            <p>Search and explore historical fisheries catches and biological attributes</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="stats-panel">
+            <div class="stat-card">
+                <h3 id="total-catches">-</h3>
+                <p>Total Catches</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-weight">-</h3>
+                <p>Total Weight (kg)</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-species">-</h3>
+                <p>Species Recorded</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-regions">-</h3>
+                <p>Regions</p>
+            </div>
+        </div>
+
+        <div class="search-panel">
+            <h2>Search Fisheries Data</h2>
+            <form id="search-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="latitude">Latitude:</label>
+                        <input type="number" id="latitude" name="latitude" step="0.001" placeholder="e.g., 58.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">Longitude:</label>
+                        <input type="number" id="longitude" name="longitude" step="0.001" placeholder="e.g., -5.2">
+                    </div>
+                    <div class="form-group">
+                        <label for="radius">Radius (km):</label>
+                        <input type="number" id="radius" name="radius" value="100" step="10" placeholder="100">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="species">Species:</label>
+                        <input type="text" id="species" name="species" placeholder="e.g., Cod, Tuna">
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Year:</label>
+                        <select id="year" name="year">
+                            <option value="">All Years</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Search</button>
+                        <button type="button" id="reset-btn">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="map-panel">
+            <h2>Geographic Distribution</h2>
+            <div id="map"></div>
+        </div>
+
+        <div class="results-panel">
+            <h2>Search Results</h2>
+            <div id="results-count">Showing <span id="count">0</span> results</div>
+            <div id="results-container">
+                <p class="no-results">Enter search criteria and click Search to view results.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Fisheries Catch Distribution. Data for educational purposes.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
