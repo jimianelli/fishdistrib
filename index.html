@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Distribution - Global FAO Areas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1929 0%, #1a2332 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .globe-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #globeCanvas {
+            max-width: 100%;
+            max-height: 100%;
+            cursor: grab;
+        }
+
+        #globeCanvas:active {
+            cursor: grabbing;
+        }
+
+        .info-section {
+            width: 400px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 30px;
+            overflow-y: auto;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #60a5fa;
+            border-bottom: 2px solid #60a5fa;
+            padding-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        .area-card {
+            background: rgba(51, 65, 85, 0.7);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #60a5fa;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .area-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(96, 165, 250, 0.3);
+        }
+
+        .area-card h2 {
+            font-size: 20px;
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+
+        .area-card h3 {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .attribute {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .attribute:last-child {
+            border-bottom: none;
+        }
+
+        .attribute-label {
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .attribute-value {
+            color: #94a3b8;
+            text-align: right;
+        }
+
+        .legend {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 8px;
+        }
+
+        .legend h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .legend-text {
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            font-size: 14px;
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .info-section {
+                width: 100%;
+                height: 50vh;
+            }
+
+            .globe-section {
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tooltip" id="tooltip"></div>
+    <div class="container">
+        <div class="globe-section">
+            <canvas id="globeCanvas"></canvas>
+        </div>
+        <div class="info-section">
+            <h1>Fish Distribution</h1>
+            <p class="subtitle">Global FAO Fishing Areas</p>
+            
+            <div class="area-card">
+                <h2>FAO Area 67</h2>
+                <h3>North Pacific</h3>
+                <div class="attribute">
+                    <span class="attribute-label">Region:</span>
+                    <span class="attribute-value">Pacific, Northeast</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-label">Area Size:</span>
+                    <span class="attribute-value">~7.8M km²</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-label">Key Species:</span>
+                    <span class="attribute-value">Salmon, Pollock</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-label">Coordinates:</span>
+                    <span class="attribute-value">45°N, 165°W</span>
+                </div>
+            </div>
+
+            <div class="area-card">
+                <h2>FAO Area 21</h2>
+                <h3>Northwest Atlantic</h3>
+                <div class="attribute">
+                    <span class="attribute-label">Region:</span>
+                    <span class="attribute-value">Atlantic, Northwest</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-label">Area Size:</span>
+                    <span class="attribute-value">~6.2M km²</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-label">Key Species:</span>
+                    <span class="attribute-value">Cod, Haddock</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-label">Coordinates:</span>
+                    <span class="attribute-value">50°N, 50°W</span>
+                </div>
+            </div>
+
+            <div class="area-card">
+                <h2>FAO Area 51</h2>
+                <h3>Western Indian Ocean</h3>
+                <div class="attribute">
+                    <span class="attribute-label">Region:</span>
+                    <span class="attribute-value">Indian Ocean, West</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-label">Area Size:</span>
+                    <span class="attribute-value">~12.1M km²</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-label">Key Species:</span>
+                    <span class="attribute-value">Tuna, Sardines</span>
+                </div>
+                <div class="attribute">
+                    <span class="attribute-label">Coordinates:</span>
+                    <span class="attribute-value">10°S, 55°E</span>
+                </div>
+            </div>
+
+            <div class="legend">
+                <h3>Legend</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #ef4444;"></div>
+                    <span class="legend-text">Major Fishing Areas</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #3b82f6;"></div>
+                    <span class="legend-text">Marine Boundaries</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #22c55e;"></div>
+                    <span class="legend-text">Landmasses</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FAO fishing areas data with pins
+        const faoAreas = [
+            {
+                name: 'FAO Area 67',
+                description: 'North Pacific',
+                lat: 45,
+                lng: -165,
+                color: '#ef4444'
+            },
+            {
+                name: 'FAO Area 21',
+                description: 'Northwest Atlantic',
+                lat: 50,
+                lng: -50,
+                color: '#ef4444'
+            },
+            {
+                name: 'FAO Area 51',
+                description: 'Western Indian Ocean',
+                lat: -10,
+                lng: 55,
+                color: '#ef4444'
+            }
+        ];
+
+        // Simplified world geometry (major landmasses)
+        const continents = [
+            // North America
+            {points: [[-170, 70], [-130, 70], [-100, 70], [-70, 50], [-80, 30], [-100, 20], [-110, 10], [-85, 10], [-80, 15], [-75, 10], [-78, 8], [-82, 10], [-90, 15], [-95, 18], [-105, 20], [-110, 25], [-115, 30], [-120, 35], [-125, 40], [-130, 45], [-135, 50], [-140, 55], [-150, 60], [-160, 65], [-170, 70]]},
+            // South America
+            {points: [[-80, 10], [-75, 5], [-70, 0], [-65, -5], [-60, -15], [-58, -25], [-55, -35], [-60, -45], [-68, -55], [-72, -55], [-75, -50], [-78, -40], [-80, -30], [-82, -20], [-85, -10], [-82, -5], [-80, 0], [-80, 10]]},
+            // Europe
+            {points: [[-10, 60], [0, 62], [10, 62], [20, 60], [30, 58], [35, 55], [30, 50], [20, 48], [10, 45], [0, 45], [-5, 50], [-10, 55], [-10, 60]]},
+            // Africa
+            {points: [[-18, 35], [0, 35], [10, 30], [20, 25], [30, 20], [40, 10], [45, 0], [42, -10], [38, -20], [30, -30], [20, -35], [15, -35], [10, -30], [5, -25], [0, -20], [-5, -15], [-10, -10], [-15, 0], [-18, 10], [-18, 20], [-18, 35]]},
+            // Asia
+            {points: [[35, 55], [40, 60], [50, 65], [60, 70], [80, 75], [100, 75], [120, 70], [130, 65], [140, 60], [145, 50], [140, 40], [135, 30], [130, 20], [125, 10], [120, 5], [110, 0], [100, -5], [95, -8], [100, -10], [110, -10], [120, -8], [130, -5], [135, 0], [140, 5], [145, 10], [150, 20], [155, 30], [160, 40], [165, 50], [170, 55], [175, 50], [-180, 50], [-175, 45], [175, 45], [170, 40], [165, 30], [160, 20], [155, 10], [150, 5], [145, 0], [140, -5], [135, -8], [130, -10], [125, -8], [120, -5], [115, 0], [110, 5], [105, 8], [100, 10], [95, 12], [90, 15], [85, 18], [80, 20], [75, 22], [70, 25], [65, 28], [60, 32], [55, 38], [50, 45], [45, 50], [40, 53], [35, 55]]},
+            // Australia
+            {points: [[115, -10], [120, -15], [130, -18], [140, -20], [145, -25], [150, -30], [153, -35], [150, -40], [145, -42], [140, -40], [135, -38], [130, -35], [125, -32], [120, -28], [115, -22], [113, -15], [115, -10]]},
+        ];
+
+        const canvas = document.getElementById('globeCanvas');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+
+        let rotation = 0;
+        let isDragging = false;
+        let lastX = 0;
+        let autoRotate = true;
+
+        // Set canvas size
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const size = Math.min(container.clientWidth, container.clientHeight) * 0.9;
+            canvas.width = size;
+            canvas.height = size;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Convert lat/lng to 3D coordinates
+        function latLngToXYZ(lat, lng, radius) {
+            const phi = (90 - lat) * Math.PI / 180;
+            const theta = (lng + 180) * Math.PI / 180;
+            return {
+                x: radius * Math.sin(phi) * Math.cos(theta),
+                y: radius * Math.cos(phi),
+                z: radius * Math.sin(phi) * Math.sin(theta)
+            };
+        }
+
+        // Project 3D point to 2D canvas
+        function project3DTo2D(x, y, z, rotation) {
+            const radius = canvas.width / 2.5;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Apply rotation
+            const cosR = Math.cos(rotation);
+            const sinR = Math.sin(rotation);
+            const rotX = x * cosR - z * sinR;
+            const rotZ = x * sinR + z * cosR;
+
+            // Simple orthographic projection
+            return {
+                x: centerX + rotX,
+                y: centerY - y,
+                z: rotZ,
+                visible: rotZ > -radius * 0.3
+            };
+        }
+
+        // Draw the globe
+        function drawGlobe() {
+            const radius = canvas.width / 2.5;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Clear canvas
+            ctx.fillStyle = '#0a1929';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw ocean
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+            gradient.addColorStop(0, '#1e3a8a');
+            gradient.addColorStop(1, '#0c1e3d');
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // Draw grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            
+            // Latitude lines
+            for (let lat = -80; lat <= 80; lat += 20) {
+                ctx.beginPath();
+                let firstPoint = true;
+                for (let lng = -180; lng <= 180; lng += 5) {
+                    const pos3D = latLngToXYZ(lat, lng, radius);
+                    const pos2D = project3DTo2D(pos3D.x, pos3D.y, pos3D.z, rotation);
+                    if (pos2D.visible) {
+                        if (firstPoint) {
+                            ctx.moveTo(pos2D.x, pos2D.y);
+                            firstPoint = false;
+                        } else {
+                            ctx.lineTo(pos2D.x, pos2D.y);
+                        }
+                    } else {
+                        firstPoint = true;
+                    }
+                }
+                ctx.stroke();
+            }
+
+            // Longitude lines
+            for (let lng = -180; lng < 180; lng += 20) {
+                ctx.beginPath();
+                let firstPoint = true;
+                for (let lat = -90; lat <= 90; lat += 5) {
+                    const pos3D = latLngToXYZ(lat, lng, radius);
+                    const pos2D = project3DTo2D(pos3D.x, pos3D.y, pos3D.z, rotation);
+                    if (pos2D.visible) {
+                        if (firstPoint) {
+                            ctx.moveTo(pos2D.x, pos2D.y);
+                            firstPoint = false;
+                        } else {
+                            ctx.lineTo(pos2D.x, pos2D.y);
+                        }
+                    } else {
+                        firstPoint = true;
+                    }
+                }
+                ctx.stroke();
+            }
+
+            // Draw continents
+            ctx.fillStyle = '#22c55e';
+            ctx.strokeStyle = '#166534';
+            ctx.lineWidth = 1;
+            
+            continents.forEach(continent => {
+                ctx.beginPath();
+                let firstPoint = true;
+                const projectedPoints = [];
+                
+                continent.points.forEach(([lng, lat]) => {
+                    const pos3D = latLngToXYZ(lat, lng, radius);
+                    const pos2D = project3DTo2D(pos3D.x, pos3D.y, pos3D.z, rotation);
+                    projectedPoints.push({...pos2D, visible: pos2D.visible});
+                });
+
+                // Only draw if at least some points are visible
+                const visiblePoints = projectedPoints.filter(p => p.visible);
+                if (visiblePoints.length > 2) {
+                    projectedPoints.forEach((pos2D, i) => {
+                        if (pos2D.visible) {
+                            if (firstPoint) {
+                                ctx.moveTo(pos2D.x, pos2D.y);
+                                firstPoint = false;
+                            } else {
+                                ctx.lineTo(pos2D.x, pos2D.y);
+                            }
+                        }
+                    });
+                    ctx.globalAlpha = 0.7;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                    ctx.stroke();
+                }
+            });
+
+            // Draw pins for FAO areas
+            faoAreas.forEach(area => {
+                const pos3D = latLngToXYZ(area.lat, area.lng, radius);
+                const pos2D = project3DTo2D(pos3D.x, pos3D.y, pos3D.z, rotation);
+                
+                if (pos2D.visible) {
+                    // Draw pin shadow
+                    ctx.beginPath();
+                    ctx.arc(pos2D.x + 2, pos2D.y + 2, 10, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                    ctx.fill();
+
+                    // Draw pin
+                    ctx.beginPath();
+                    ctx.arc(pos2D.x, pos2D.y, 10, 0, Math.PI * 2);
+                    ctx.fillStyle = area.color;
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+
+                    // Store position for hover detection
+                    area.screenX = pos2D.x;
+                    area.screenY = pos2D.y;
+                    area.isVisible = true;
+                } else {
+                    area.isVisible = false;
+                }
+            });
+
+            // Draw globe outline
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        // Mouse interaction
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            autoRotate = false;
+            lastX = e.clientX;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - lastX;
+                rotation += deltaX * 0.01;
+                lastX = e.clientX;
+                drawGlobe();
+            } else {
+                // Check for hover over pins
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                let hovering = false;
+                faoAreas.forEach(area => {
+                    if (area.isVisible) {
+                        const dist = Math.sqrt(
+                            Math.pow(mouseX - area.screenX, 2) + 
+                            Math.pow(mouseY - area.screenY, 2)
+                        );
+                        if (dist < 10) {
+                            tooltip.innerHTML = `<strong>${area.name}</strong><br/>${area.description}<br/>Lat: ${area.lat}°, Lng: ${area.lng}°`;
+                            tooltip.style.left = e.clientX + 10 + 'px';
+                            tooltip.style.top = e.clientY - 10 + 'px';
+                            tooltip.style.opacity = '1';
+                            hovering = true;
+                        }
+                    }
+                });
+                
+                if (!hovering) {
+                    tooltip.style.opacity = '0';
+                }
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+            tooltip.style.opacity = '0';
+        });
+
+        // Animation loop
+        function animate() {
+            if (autoRotate && !isDragging) {
+                rotation += 0.005;
+            }
+            drawGlobe();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
