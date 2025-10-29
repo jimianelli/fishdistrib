@@ -260,12 +260,14 @@
         }
 
         function formatPercent(value) {
-            return value != null ? `${value.toFixed(1)}%` : '—';
+            const numeric = Number(value);
+            return Number.isFinite(numeric) ? `${numeric.toFixed(1)}%` : '—';
         }
 
         function formatLandings(landings) {
             if (!landings || landings.landings_mt == null) return '—';
-            return `${landings.landings_mt.toFixed(2)} Mt`;
+            const numeric = Number(landings.landings_mt);
+            return Number.isFinite(numeric) ? `${numeric.toFixed(2)} Mt` : '—';
         }
 
         const faoAreas = Array.isArray(FAO_REGION_SUMMARY)
@@ -372,10 +374,6 @@
                     ` : ''}
                 </div>
             `).join('');
-        }
-
-        if (typeof LAND_POLYGONS === 'undefined') {
-            console.warn('LAND_POLYGONS is not defined. Ensure static/js/land-polygons.js is loaded.');
         }
 
         renderAreaCards();
