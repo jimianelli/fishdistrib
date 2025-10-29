@@ -78,6 +78,12 @@
             box-shadow: 0 5px 15px rgba(96, 165, 250, 0.3);
         }
 
+        .area-card.selected {
+            box-shadow: 0 10px 25px rgba(96, 165, 250, 0.45);
+            transform: translateX(5px);
+            border-left-color: #3b82f6;
+        }
+
         .area-card h2 {
             font-size: 20px;
             color: #60a5fa;
@@ -343,6 +349,8 @@
             area.pinScale = scale;
         });
 
+        let selectedAreaCode = null;
+
         function renderAreaCards() {
             const container = document.getElementById('area-cards');
             if (!container) {
@@ -364,7 +372,7 @@
 
             const sorted = [...faoAreas].sort((a, b) => (b.unsPct ?? 0) - (a.unsPct ?? 0));
             container.innerHTML = sorted.map(area => `
-                <div class="area-card" style="border-left-color: ${area.color};">
+                <div class="area-card${area.code === selectedAreaCode ? ' selected' : ''}" data-area-code="${area.code}" style="border-left-color: ${area.color};">
                     <h2>${area.title}</h2>
                     <h3>${area.label}</h3>
                     <div class="attribute">
@@ -420,15 +428,16 @@
             `).join('');
         }
 
-        if (typeof LAND_POLYGONS === 'undefined') {
-            console.warn('LAND_POLYGONS is not defined. Ensure static/js/land-polygons.js is loaded.');
+        function highlightArea(areaCode) {
+            selectedAreaCode = areaCode;
+            renderAreaCards();
+            const selectedCard = document.querySelector(`.area-card[data-area-code="${areaCode}"]`);
+            if (selectedCard) {
+                selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
 
         renderAreaCards();
-
-        if (typeof LAND_POLYGONS === 'undefined') {
-            console.warn('LAND_POLYGONS is not defined. Ensure static/js/land-polygons.js is loaded.');
-        }
 
         const canvas = document.getElementById('globeCanvas');
         const ctx = canvas.getContext('2d');
@@ -823,6 +832,14 @@
                 }
             });
 
+            document.querySelectorAll('.area-card').forEach(node => {
+                if (node.dataset.areaCode === selectedAreaCode) {
+                    node.classList.add('selected');
+                } else {
+                    node.classList.remove('selected');
+                }
+            });
+
             // Draw globe outline
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -878,10 +895,21 @@
             }
         });
 
-        canvas.addEventListener('mouseup', () => {
+        canvas.addEventListener('mouseup', (e) => {
             isDragging = false;
             clearTimeout(rotateResumeTimer);
             rotateResumeTimer = setTimeout(() => autoRotate = true, 2000);
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            faoAreas.forEach(area => {
+                if (area.isVisible) {
+                    const dist = Math.hypot(mouseX - area.screenX, mouseY - area.screenY);
+                    if (dist < 12) {
+                        highlightArea(area.code);
+                    }
+                }
+            });
         });
 
         canvas.addEventListener('mouseleave', () => {
@@ -902,6 +930,17 @@
         }
 
         animate();
+
+        document.getElementById('area-cards').addEventListener('click', (event) => {
+            const card = event.target.closest('.area-card');
+            if (!card) {
+                return;
+            }
+            const areaCode = card.dataset.areaCode;
+            if (areaCode) {
+                highlightArea(areaCode);
+            }
+        });
     </script>
 </body>
 </html>
