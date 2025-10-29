@@ -36,6 +36,7 @@
             max-width: 100%;
             max-height: 100%;
             cursor: grab;
+            touch-action: none;
         }
 
         #globeCanvas:active {
@@ -450,6 +451,7 @@
         let stars = [];
         let animationTick = 0;
         let rotateResumeTimer;
+        let activeTouchId = null;
 
         // Set canvas size
         function resizeCanvas() {
@@ -918,6 +920,56 @@
             rotateResumeTimer = setTimeout(() => autoRotate = true, 2000);
             tooltip.style.opacity = '0';
         });
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) {
+                const touch = e.touches[0];
+                activeTouchId = touch.identifier;
+                isDragging = true;
+                autoRotate = false;
+                clearTimeout(rotateResumeTimer);
+                lastX = touch.clientX;
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            const touch = Array.from(e.touches).find(t => t.identifier === activeTouchId);
+            if (touch) {
+                const deltaX = touch.clientX - lastX;
+                rotation -= deltaX * 0.01;
+                lastX = touch.clientX;
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+            const touch = Array.from(e.changedTouches).find(t => t.identifier === activeTouchId);
+            if (touch) {
+                isDragging = false;
+                activeTouchId = null;
+                clearTimeout(rotateResumeTimer);
+                rotateResumeTimer = setTimeout(() => autoRotate = true, 2000);
+
+                const rect = canvas.getBoundingClientRect();
+                const touchX = touch.clientX - rect.left;
+                const touchY = touch.clientY - rect.top;
+                faoAreas.forEach(area => {
+                    if (area.isVisible) {
+                        const dist = Math.hypot(touchX - area.screenX, touchY - area.screenY);
+                        if (dist < 14) {
+                            highlightArea(area.code);
+                        }
+                    }
+                });
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchcancel', () => {
+            isDragging = false;
+            activeTouchId = null;
+            clearTimeout(rotateResumeTimer);
+            rotateResumeTimer = setTimeout(() => autoRotate = true, 2000);
+        }, { passive: false });
 
         // Animation loop
         function animate() {
