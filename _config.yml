@@ -1,0 +1,5 @@
+title: Fishdistrib
+baseurl: "/fishdistrib"
+url: "https://jimianelli.github.io"
+markdown: kramdown
+permalink: /:path/
