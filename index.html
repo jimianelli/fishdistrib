@@ -154,6 +154,11 @@
             list-style: disc;
         }
 
+        .area-card a {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
         .tooltip {
             position: absolute;
             background: rgba(0, 0, 0, 0.9);
@@ -252,6 +257,8 @@
             "87": ['Anchoveta', 'Jack mackerel', 'Chilean hake']
         };
 
+        const FAO_REPORT_URL = 'https://openknowledge.fao.org/bitstreams/fb7a5234-2579-43c1-bed7-4b4a5c6fd2f9/download';
+
         function getRegionColor(unsPct) {
             if (unsPct == null) return '#60a5fa';
             if (unsPct <= 25) return '#22c55e';
@@ -260,12 +267,14 @@
         }
 
         function formatPercent(value) {
-            return value != null ? `${value.toFixed(1)}%` : '—';
+            const numeric = Number(value);
+            return Number.isFinite(numeric) ? `${numeric.toFixed(1)}%` : '—';
         }
 
         function formatLandings(landings) {
             if (!landings || landings.landings_mt == null) return '—';
-            return `${landings.landings_mt.toFixed(2)} Mt`;
+            const numeric = Number(landings.landings_mt);
+            return Number.isFinite(numeric) ? `${numeric.toFixed(2)} Mt` : '—';
         }
 
         const faoAreas = Array.isArray(FAO_REGION_SUMMARY)
@@ -282,6 +291,8 @@
                 const mainSpecies = (Array.isArray(region.main_species) && region.main_species.length
                     ? region.main_species
                     : speciesHighlights[region.area_code]) || [];
+                const sourcePage = Number.isFinite(region.source_page) ? region.source_page : null;
+                const sourceUrl = sourcePage ? `${FAO_REPORT_URL}#page=${sourcePage}` : FAO_REPORT_URL;
 
                 return {
                     code: region.area_code,
@@ -298,6 +309,8 @@
                     totalStocks: region.total_stocks ?? null,
                     landings,
                     mainSpecies,
+                    sourcePage,
+                    sourceUrl,
                     description: sustainablePct != null && unsPct != null
                         ? `Sustainable stocks: ${sustainablePct.toFixed(1)}% • Overfished: ${unsPct.toFixed(1)}%`
                         : 'Assessment summary pending update.'
@@ -385,6 +398,14 @@
                             <span class="attribute-value">${formatPercent(area.landings.landings_sustainable_pct)}</span>
                         </div>
                     ` : ''}
+                    <div class="attribute">
+                        <span class="attribute-label">Source</span>
+                        <span class="attribute-value">
+                            <a href="${area.sourceUrl}" target="_blank" rel="noopener">
+                                FAO report${area.sourcePage ? `, p. ${area.sourcePage}` : ''}
+                            </a>
+                        </span>
+                    </div>
                     ${area.mainSpecies && area.mainSpecies.length ? `
                         <div class="attribute">
                             <span class="attribute-label">Key species</span>
@@ -840,9 +861,10 @@
                             const landingsLine = area.landings && area.landings.landings_mt != null
                                 ? `Landings 2021: ${formatLandings(area.landings)}`
                                 : null;
+                            const sourceLine = area.sourcePage ? `FAO report p. ${area.sourcePage}` : null;
                             tooltip.innerHTML = `<strong>${area.displayName}</strong><br>${statusLine}${
                                 landingsLine ? `<br>${landingsLine}` : ''
-                            }<br>Lat: ${area.lat.toFixed(1)}°, Lng: ${area.lng.toFixed(1)}°`;
+                            }${sourceLine ? `<br>${sourceLine}` : ''}<br>Lat: ${area.lat.toFixed(1)}°, Lng: ${area.lng.toFixed(1)}°`;
                             tooltip.style.left = `${e.clientX + 10}px`;
                             tooltip.style.top = `${e.clientY - 10}px`;
                             tooltip.style.opacity = '1';

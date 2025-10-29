@@ -19,7 +19,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 84.6,
       "landings_unsustainable_pct": 15.4
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 71
   },
   {
     "area_code": "27",
@@ -49,7 +50,8 @@ const FAO_REGION_SUMMARY = [
       "saithe",
       "haddock",
       "sandeels NEI Ammodytes spp"
-    ]
+    ],
+    "source_page": 85
   },
   {
     "area_code": "31",
@@ -70,7 +72,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 78.0,
       "landings_unsustainable_pct": 22.0
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 101
   },
   {
     "area_code": "34",
@@ -91,7 +94,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 65.6,
       "landings_unsustainable_pct": 34.4
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 119
   },
   {
     "area_code": "37",
@@ -99,7 +103,8 @@ const FAO_REGION_SUMMARY = [
     "total_stocks": null,
     "percentages": null,
     "landings": null,
-    "main_species": null
+    "main_species": null,
+    "source_page": 133
   },
   {
     "area_code": "41",
@@ -120,7 +125,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 68.4,
       "landings_unsustainable_pct": 31.6
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 153
   },
   {
     "area_code": "47",
@@ -141,7 +147,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 43.8,
       "landings_unsustainable_pct": 56.2
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 171
   },
   {
     "area_code": "51",
@@ -162,7 +169,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 70.6,
       "landings_unsustainable_pct": 29.4
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 185
   },
   {
     "area_code": "57",
@@ -183,7 +191,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 82.9,
       "landings_unsustainable_pct": 17.1
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 201
   },
   {
     "area_code": "61",
@@ -204,7 +213,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 73.7,
       "landings_unsustainable_pct": 26.3
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 217
   },
   {
     "area_code": "67",
@@ -225,7 +235,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 99.0,
       "landings_unsustainable_pct": 1.0
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 231
   },
   {
     "area_code": "71",
@@ -246,7 +257,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 45.0,
       "landings_unsustainable_pct": 55.0
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 251
   },
   {
     "area_code": "77",
@@ -267,7 +279,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 81.2,
       "landings_unsustainable_pct": 18.8
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 267
   },
   {
     "area_code": "81",
@@ -288,7 +301,8 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 95.7,
       "landings_unsustainable_pct": 4.3
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 285
   },
   {
     "area_code": "87",
@@ -309,6 +323,7 @@ const FAO_REGION_SUMMARY = [
       "landings_sustainable_pct": 81.1,
       "landings_unsustainable_pct": 18.9
     },
-    "main_species": null
+    "main_species": null,
+    "source_page": 303
   }
 ];

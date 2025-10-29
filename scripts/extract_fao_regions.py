@@ -43,6 +43,13 @@ def extract_area_chunks(text: str):
         processed.add(key)
 
         raw_name = match.group(3).strip()
+        page_hint = None
+        page_match = re.search(r"(\d+)\s*$", raw_name)
+        if page_match:
+            try:
+                page_hint = int(page_match.group(1))
+            except ValueError:
+                page_hint = None
         raw_name = re.sub(r"\s+\d+$", "", raw_name).strip()
 
         end_idx = idx + 1
@@ -57,7 +64,7 @@ def extract_area_chunks(text: str):
         start = match.end()
         end = matches[end_idx].start() if end_idx < len(matches) else len(text)
         chunk = text[start:end]
-        yield area_idx, area_code, raw_name, chunk
+        yield area_idx, area_code, raw_name, page_hint, chunk
 
 
 def extract_table_numbers(line: str):
@@ -126,7 +133,7 @@ def build_region_summary():
     text = LAYOUT_PATH.read_text(encoding="utf-8")
     regions = []
 
-    for area_idx, area_code, raw_name, chunk in extract_area_chunks(text):
+    for area_idx, area_code, raw_name, page_hint, chunk in extract_area_chunks(text):
         total_stocks, percentages, landings = find_table_values(chunk, area_idx)
         species = find_main_species(chunk, area_code)
 
@@ -137,6 +144,7 @@ def build_region_summary():
             "percentages": percentages or None,
             "landings": landings or None,
             "main_species": species,
+            "source_page": page_hint,
         }
         regions.append(region)
 
