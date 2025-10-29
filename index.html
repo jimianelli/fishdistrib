@@ -305,6 +305,32 @@
             }).filter(Boolean)
             : [];
 
+        const landingValues = faoAreas
+            .map(area => Number(area.landings?.landings_mt))
+            .filter(value => Number.isFinite(value) && value > 0);
+
+        let minLanding = null;
+        let maxLanding = null;
+
+        if (landingValues.length) {
+            minLanding = Math.min(...landingValues);
+            maxLanding = Math.max(...landingValues);
+        }
+
+        faoAreas.forEach(area => {
+            const landingValue = Number(area.landings?.landings_mt);
+            let scale = 0.75;
+            if (Number.isFinite(landingValue) && landingValue > 0 && minLanding != null && maxLanding != null) {
+                if (maxLanding === minLanding) {
+                    scale = 1.5;
+                } else {
+                    const ratio = (landingValue - minLanding) / (maxLanding - minLanding);
+                    scale = 0.75 + ratio * 1.5;
+                }
+            }
+            area.pinScale = scale;
+        });
+
         function renderAreaCards() {
             const container = document.getElementById('area-cards');
             if (!container) {
@@ -744,7 +770,9 @@
                 if (pos2D.visible) {
                     ctx.save();
                     const pulse = (Math.sin(animationTick * 0.08) + 1) * 0.5;
-                    const pulseRadius = 12 + pulse * 4;
+                    const pinScale = area.pinScale || 1;
+                    const baseRadius = 9 * pinScale;
+                    const pulseRadius = baseRadius + pulse * (4 * pinScale);
                     ctx.beginPath();
                     ctx.arc(pos2D.x, pos2D.y, pulseRadius, 0, Math.PI * 2);
                     ctx.strokeStyle = hexToRGBA(area.color, 0.25 * (1 - pulse) + 0.15);
@@ -752,17 +780,17 @@
                     ctx.stroke();
 
                     ctx.beginPath();
-                    ctx.arc(pos2D.x, pos2D.y, 10, 0, Math.PI * 2);
+                    ctx.arc(pos2D.x, pos2D.y, baseRadius, 0, Math.PI * 2);
                     ctx.fillStyle = area.color;
                     ctx.shadowColor = hexToRGBA(area.color, 0.6);
-                    ctx.shadowBlur = 14;
+                    ctx.shadowBlur = 12 * pinScale;
                     ctx.fill();
-                    ctx.lineWidth = 3;
+                    ctx.lineWidth = 2.5;
                     ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
                     ctx.stroke();
 
                     ctx.beginPath();
-                    ctx.arc(pos2D.x, pos2D.y, 4, 0, Math.PI * 2);
+                    ctx.arc(pos2D.x, pos2D.y, Math.max(3, 4 * pinScale * 0.6), 0, Math.PI * 2);
                     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
                     ctx.fill();
                     ctx.restore();
