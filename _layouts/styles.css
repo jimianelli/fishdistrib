@@ -1,0 +1,66 @@
+/* Minimal styles for the FAO Fisheries distribution site */
+:root{
+  --bg:#ffffff;
+  --text:#222;
+  --muted:#666;
+  --accent:#0b6fb3;
+  --max-width:860px;
+  --gap:1rem;
+  --site-padding:1.25rem;
+  font-size:16px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  padding:var(--site-padding);
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.5;
+  display:flex;
+  justify-content:center;
+}
+
+.container{
+  width:100%;
+  max-width:var(--max-width);
+}
+
+header{
+  margin:0 0 var(--gap) 0;
+  padding:0;
+}
+header h1{
+  margin:0;
+  font-size:1.25rem;
+  font-weight:600;
+}
+header a{
+  color:var(--accent);
+  text-decoration:none;
+}
+
+main.container{
+  background:transparent;
+  padding:0;
+}
+
+h1,h2,h3{color:var(--text);margin-top:0}
+p{color:var(--muted)}
+
+footer{
+  margin-top:2rem;
+  color:var(--muted);
+  font-size:0.9rem;
+}
+
+/* Responsive tweaks */
+@media (max-width:600px){
+  :root{font-size:15px}
+  body{padding:0.75rem}
+  header h1{font-size:1.1rem}
+}
