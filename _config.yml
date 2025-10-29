@@ -1,5 +1,7 @@
-title: Fishdistrib
+---
+title: FAO Fisheries distribution
 baseurl: "/fishdistrib"
 url: "https://jimianelli.github.io"
 markdown: kramdown
 permalink: /:path/
+---
